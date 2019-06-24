@@ -1,0 +1,185 @@
+PRINT "==============================".
+PRINT "======= Coded by GoDit =======".
+PRINT "== FALCON HEAVY V.01 (BETA) ==".
+PRINT "==============================".
+wait 15.
+
+function main {
+    countdown().
+    peluncuran().
+    wait 15.
+    lakukanAscent().
+    UNTIL apoapsis > 100000 {
+        stageotomatis().
+    }
+    matikan().
+    releaseboostercore().
+    wait 20.
+    fireuplastbooster().
+    wait 2.
+    peluncuran2().
+    Print "== Burn..".
+    UNTIL periapsis > 100000 {
+        lakukanstage2().
+    }
+    matikan().
+    wait 3.
+    openfairing().
+    wait 3.
+    decoupling().
+    print "U Did It Sir!".
+}
+
+function decoupling {
+    PRINT "== Decoupling..".
+    wait 1.
+    PRINT "== .".
+    wait 1.
+    PRINT "== .".
+    wait 1.
+    PRINT "== .".
+    lakukanstage().
+}
+
+function openfairing {
+    PRINT "== Opening Fairing..".
+    lakukanstage().
+}
+
+function releasefairing {
+    peluncuran().
+}
+
+function fireuplastbooster {
+    PRINT "== Fire Up The Orbiter Booster In:".
+    LOCK steering to prograde.
+    set cd to 20.
+    UNTIL cd = 0 {
+        PRINT "T - " + cd.
+        set cd to cd - 1.
+        wait 1.
+    }
+    lakukanstage().
+    PRINT "== Turned On, Ready To Go..".
+}
+
+function releaseboostercore {
+    PRINT "== Release The Core Booster In:".
+    LOCK steering to prograde.
+    set cd to 15.
+    UNTIL cd = 0 {
+        PRINT "T - " + cd.
+        set cd to cd - 1.
+        wait 1.
+    }
+    lakukanstage().
+    PRINT "== Released..".
+}
+
+function countdown {
+    PRINT "== Countdown..".
+    FROM {
+        local cd is 30.
+    }
+    UNTIL cd = 0
+    STEP{
+        set cd to cd -  1.
+        wait 1.
+    }
+    DO {
+        IF cd = 3 {
+            PRINT "== Center Booster Starts".
+            lakukanstage().
+            LOCK throttle to 1.
+        }
+        IF cd = 5 {
+            PRINT "== Side Boosters Start".
+            lakukanstage().
+            LOCK throttle to 1.
+        }
+        IF cd = 15 {
+            PRINT "== Standby For Time Rocket Out ".
+        }
+        IF cd = 16 {
+            PRINT "== Falcon Heavy Is Configure For Flight".
+        }
+        IF cd = 24 {
+            PRINT "== Space X Falcon Heavy, Go For Launch".
+        }
+        PRINT "T - " + cd.
+    }
+    PRINT "== Ignition..".
+}
+
+function lakukanstage {
+    wait UNTIL stage:ready.
+    stage.
+}
+
+function lakukanstage2 {
+    LOCK throttle to 1.
+    LOCK Steering to prograde.
+    wait UNTIL true.
+}
+
+function peluncuran {
+    SAS on.
+    RCS on.
+    lakukanstage().
+    PRINT "== LIFTOFF..".
+}
+
+function peluncuran2 {
+    Print "== 2nd Stage - Orbiting Burn In:".
+    LOCK Steering to prograde. 
+    set cd to 92.
+    UNTIL cd = 0 {
+        PRINT "T - " + cd.
+        set cd to cd - 1.
+        wait 1.
+    }
+}
+
+function lakukanAscent {
+    PRINT "== Maneuvering..".
+    LOCK targetPitch to 88.963 - 1.03287 * alt:radar^0.409511.
+    set targetDirection to 90. // 90 Derajat
+    LOCK steering to heading(targetDirection, targetPitch).
+}
+
+function stageotomatis {
+    if not(defined oldThrust) {
+        declare global oldThrust to ship:availablethrust.
+    }
+    if ship:availablethrust < (oldThrust - 10 ) {
+        Print "== 1st Stage - Release Side Booster In:".
+        LOCK throttle to 0.9.
+        LOCK steering to prograde.
+        set cd to 20.
+        UNTIL cd = 0 {
+            PRINT "T - " + cd.
+            set cd to cd - 1.
+            wait 1.
+        }
+        PRINT "== Decoy..".
+        lakukanstage(). wait 1. //RCS on.
+        declare global oldThrust to ship:availablethrust.
+    }
+}
+
+function stageotomatis2 {
+    LOCK throttle to 1.
+}
+
+function stageotomatis3 {
+    LOCK throttle to 0.
+}
+
+function matikan {
+    SET throttle to 0.
+    LOCK Steering to prograde.
+    // wait UNTIL false.
+}
+
+main().
+
